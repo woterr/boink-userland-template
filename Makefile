@@ -1,7 +1,7 @@
 CC = i686-elf-gcc
 LD = i686-elf-ld
 CFLAGS = -ffreestanding -O2 -Wall -Wextra -Ilibc/include
-LDFLAGS = -T linker.ld -nostdlib
+LDFLAGS = -T linker.ld -nostdlib -e _start
 
 OBJS = src/main.o build/crt0.o
 LIBC = libc/build/libc.a
@@ -17,8 +17,8 @@ binary: elf
 src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-build/crt0.o: crt/crt0.s
-	$(CC) $(CFLAGS) -c $< -o $@
+build/crt0.o: crt/crt0.asm
+	nasm -f elf32 crt/crt0.asm -o build/crt0.o
 
 $(LIBC):
 	make -C libc
