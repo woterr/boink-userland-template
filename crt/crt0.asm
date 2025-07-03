@@ -11,12 +11,10 @@ _start:
 	push ebx              ; push argv (second)
 	push eax              ; push argc (first)
 	
-	
-	
 	call main             ; main(argc, argv)
 	
 	; exit syscall
-	mov ebx, eax          ; return code → ebx
+	mov ebx, eax          ; return code -> ebx
 	mov eax, 0            ; syscall: exit
 	int 0x80
 	
