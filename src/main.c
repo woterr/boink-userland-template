@@ -1,22 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <util.h>
-#include <syscall.h>
 
 #define MAX_WRONG 6
 #define MAX_WORD_LEN 32
 
-// Multiple words
-const char* words[] = {
-	"BOINK",
-	"TESTER",
-	"USERLAND"
-};
-#define NUM_WORDS (sizeof(words) / sizeof(words[0]))
-
 char guessed[256];
 int wrong_guesses = 0;
-char current_word[MAX_WORD_LEN];
+char current_word[MAX_WORD_LEN] = "BOINK";
 
 void draw_hangman(int wrong) {
 	puts("\n\n");
@@ -56,21 +46,9 @@ int already_guessed(char c) {
 }
 
 int main(int argc, char** argv) {
-	clear();
 	puts("=== Welcome to Hangman on BoinkOS ===\n");
-
 	int word_len = 0;
-
-    // randomize 
-	int index = syscall(SYSCALL_UPTIME, 0, 0, 0, 0, 0) % NUM_WORDS;
-    
-	const char* selected = words[index];
-	while (selected[word_len] && word_len < MAX_WORD_LEN - 1) {
-		current_word[word_len] = selected[word_len];
-		word_len++;
-	}
-	current_word[word_len] = '\0';
-
+	while (current_word[word_len]) word_len++;
 	int correct = 0;
 
 	while (wrong_guesses < MAX_WRONG && correct < word_len) {
@@ -78,16 +56,15 @@ int main(int argc, char** argv) {
 
 		puts("\n\nGuess a letter: ");
 		char c = getchar();
-		putchar(c); // echo
+		putchar(c);
 		putchar('\n');
 
-		// Normalize case
 		if (c >= 'a' && c <= 'z') {
 			c -= 32;
 		}
 
 		if (already_guessed(c)) {
-			puts("Already guessed.\n");
+			puts("Already guessed. >:(\n");
 			continue;
 		}
 
@@ -103,16 +80,16 @@ int main(int argc, char** argv) {
 
 		if (!found) {
 			wrong_guesses++;
-			puts("Wrong guess!\n");
+			puts("Wrong guess! :(\n");
 		}
 
 		draw_hangman(wrong_guesses);
 	}
 
 	if (correct == word_len) {
-		puts("\nYou won!\n");
+		puts("\nYou won! :D\n");
 	} else {
-		puts("\nYou lost. The word was: ");
+		puts("\nYou lost :( The word was: ");
 		puts(current_word);
 		putchar('\n');
 	}
@@ -121,3 +98,5 @@ int main(int argc, char** argv) {
 	getchar();
 	return 0;
 }
+
+
